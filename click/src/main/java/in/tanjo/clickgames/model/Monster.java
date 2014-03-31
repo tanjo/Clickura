@@ -20,7 +20,9 @@ public class Monster {
   private int mVX = 0;
   private boolean mIsRight = false;
   private boolean mIsUp = false;
-  private Bitmap mBitmap;
+  private Bitmap mMonster;
+  private boolean mIsFinish = false;
+  private Bitmap mOmedeto;
   private Paint mPaint;
   private int mDisplayWidth;
   private int mDisplayHeight;
@@ -79,18 +81,34 @@ public class Monster {
   }
 
   public int getWidth() {
-    if (mBitmap != null) {
-      return mBitmap.getWidth();
+    if (mIsFinish) {
+      if (mOmedeto != null) {
+        return mOmedeto.getWidth();
+      } else {
+        return 0;
+      }
     } else {
-      return 0;
+      if (mMonster != null) {
+        return mMonster.getWidth();
+      } else {
+        return 0;
+      }
     }
   }
 
   public int getHeight() {
-    if (mBitmap != null) {
-      return mBitmap.getHeight();
+    if (mIsFinish) {
+      if (mOmedeto != null) {
+        return mOmedeto.getHeight();
+      } else {
+        return 0;
+      }
     } else {
-      return 0;
+      if (mMonster != null) {
+        return mMonster.getHeight();
+      } else {
+        return 0;
+      }
     }
   }
 
@@ -114,12 +132,12 @@ public class Monster {
     mImageSize = imageSize;
   }
 
-  public Bitmap getBitmap() {
-    return mBitmap;
+  public Bitmap getMonster() {
+    return mMonster;
   }
 
-  public void setBitmap(Bitmap bitmap) {
-    mBitmap = bitmap;
+  public void setMonster(Bitmap monster) {
+    mMonster = monster;
   }
 
   public Paint getPaint() {
@@ -130,15 +148,33 @@ public class Monster {
     mPaint = paint;
   }
 
+  public boolean isFinish() {
+    return mIsFinish;
+  }
+
+  public void setFinish(boolean isFinish) {
+    mIsFinish = isFinish;
+  }
+
+  public Bitmap getOmedeto() {
+    return mOmedeto;
+  }
+
+  public void setOmedeto(Bitmap omedeto) {
+    mOmedeto = omedeto;
+  }
+
   public Monster(Context context) {
     mImageSize = 240;
     WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
     Display display = wm.getDefaultDisplay();
     mDisplayWidth = display.getWidth();
     mDisplayHeight = display.getHeight();
-    mBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.monster);
-    mBitmap = Bitmap.createScaledBitmap(mBitmap, mImageSize, mImageSize, false);
+    mMonster = BitmapFactory.decodeResource(context.getResources(), R.drawable.monster);
+    mMonster = Bitmap.createScaledBitmap(mMonster, mImageSize, mImageSize, false);
     mPaint = new Paint();
+    mOmedeto = BitmapFactory.decodeResource(context.getResources(), R.drawable.omedeto);
+    mOmedeto = Bitmap.createScaledBitmap(mOmedeto, mImageSize, mImageSize, false);
   }
 
   public void onDraw(Canvas canvas) {
@@ -168,7 +204,11 @@ public class Monster {
       mX -= mVX * Math.random();
     }
 
-    canvas.drawBitmap(mBitmap, mX, mY, mPaint);
+    if (mIsFinish) {
+      canvas.drawBitmap(mOmedeto, mX, mY, mPaint);
+    } else {
+      canvas.drawBitmap(mMonster, mX, mY, mPaint);
+    }
   }
 
   public boolean onTouchEvent(MotionEvent event) {
@@ -176,12 +216,17 @@ public class Monster {
       if (event != null &&
           getX() < event.getX() && event.getX() < getX() + getWidth() &&
           getY() < event.getY() && event.getY() < getY() + getHeight()) {
+        if (mIsFinish) {
+          mIsFinish = false;
+        }
         if (mVY > mImageSize) {
+          mIsFinish = true;
           mVY = 10;
         } else {
           mVY += mVY;
         }
         if (mVX > mImageSize) {
+          mIsFinish = true;
           mVX = 10;
         } else {
           mVX += mVX;
