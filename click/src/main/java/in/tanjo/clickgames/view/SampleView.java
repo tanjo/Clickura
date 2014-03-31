@@ -28,7 +28,11 @@ public class SampleView extends View {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    mMonster.onTouchEvent(event);
+    if (mMonster != null && event != null &&
+        mMonster.getX() < event.getX() && event.getX() < mMonster.getX() + mMonster.getWidth() &&
+        mMonster.getY() < event.getY() && event.getY() < mMonster.getY() + mMonster.getHeight()) {
+      mMonster.onTouchEvent(event);
+    }
     return true;
   }
 }

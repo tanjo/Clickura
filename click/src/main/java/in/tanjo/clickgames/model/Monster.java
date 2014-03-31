@@ -78,6 +78,22 @@ public class Monster {
     return mDisplayWidth;
   }
 
+  public int getWidth() {
+    if (mBitmap != null) {
+      return mBitmap.getWidth();
+    } else {
+      return 0;
+    }
+  }
+
+  public int getHeight() {
+    if (mBitmap != null) {
+      return mBitmap.getHeight();
+    } else {
+      return 0;
+    }
+  }
+
   public void setDisplayWidth(int displayWidth) {
     mDisplayWidth = displayWidth;
   }
