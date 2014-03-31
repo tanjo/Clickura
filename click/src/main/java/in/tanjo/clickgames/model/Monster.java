@@ -173,15 +173,19 @@ public class Monster {
 
   public boolean onTouchEvent(MotionEvent event) {
     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-      if (mVY > mImageSize) {
-        mVY = 10;
-      } else {
-        mVY += mVY;
-      }
-      if (mVX > mImageSize) {
-        mVX = 10;
-      } else {
-        mVX += mVX;
+      if (event != null &&
+          getX() < event.getX() && event.getX() < getX() + getWidth() &&
+          getY() < event.getY() && event.getY() < getY() + getHeight()) {
+        if (mVY > mImageSize) {
+          mVY = 10;
+        } else {
+          mVY += mVY;
+        }
+        if (mVX > mImageSize) {
+          mVX = 10;
+        } else {
+          mVX += mVX;
+        }
       }
     }
     return true;
