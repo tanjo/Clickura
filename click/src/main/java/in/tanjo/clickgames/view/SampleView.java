@@ -19,6 +19,11 @@ public class SampleView extends View {
     mMonster.setVX(10);
   }
 
+  public SampleView(Context context, int color) {
+    this(context);
+    setBackgroundColor(color);
+  }
+
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);

@@ -16,9 +16,7 @@ public class MainActivity extends ActionBarActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
-    SampleView view = new SampleView(this);
-    view.setBackgroundColor(Color.BLACK);
-    setContentView(view);
+    setContentView(new SampleView(this, Color.BLACK));
   }
 
   @Override
