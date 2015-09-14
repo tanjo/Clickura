@@ -4,8 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.WindowManager;
@@ -24,6 +24,9 @@ public class Monster {
   private boolean mIsRight = false;
   private boolean mIsUp = false;
   private Bitmap mMonster;
+  private Bitmap mMonsterReX;
+  private Bitmap mMonsterReY;
+  private Bitmap mMonsterReXY;
   private boolean mIsFinish = false;
   private Bitmap mOmedeto;
   private Paint mPaint;
@@ -190,12 +193,21 @@ public class Monster {
 
   public Monster(Context context) {
     mImageSize = 240;
-    WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     Display display = wm.getDefaultDisplay();
     mDisplayWidth = display.getWidth();
     mDisplayHeight = display.getHeight();
     mMonster = BitmapFactory.decodeResource(context.getResources(), R.drawable.clickura);
     mMonster = Bitmap.createScaledBitmap(mMonster, mImageSize, mImageSize, false);
+    Matrix matrixReX = new Matrix();
+    matrixReX.preScale(-1, 1);
+    mMonsterReX = Bitmap.createBitmap(mMonster, 0, 0, mMonster.getWidth(), mMonster.getHeight(), matrixReX, false);
+    Matrix matrixReY = new Matrix();
+    matrixReY.preScale(1, -1);
+    mMonsterReY = Bitmap.createBitmap(mMonster, 0, 0, mMonster.getWidth(), mMonster.getHeight(), matrixReY, false);
+    Matrix matrixReXY = new Matrix();
+    matrixReXY.preScale(-1, -1);
+    mMonsterReXY = Bitmap.createBitmap(mMonster, 0, 0, mMonster.getWidth(), mMonster.getHeight(), matrixReXY, false);
     mPaint = new Paint();
     mOmedeto = BitmapFactory.decodeResource(context.getResources(), R.drawable.omedeto);
     mOmedeto = Bitmap.createScaledBitmap(mOmedeto, mImageSize, mImageSize, false);
@@ -205,12 +217,12 @@ public class Monster {
   public void onDraw(Canvas canvas) {
     if (mY > mDisplayHeight - mImageSize) {
       mIsUp = false;
-    } else if (mY < - mImageSize) {
+    } else if (mY < -mImageSize) {
       mIsUp = true;
     }
 
     boolean isUpWarning = false;
-    for (Position position: mPositionList) {
+    for (Position position : mPositionList) {
       if (mY < position.getY() && mY + mVY > position.getY()) {
         isUpWarning = true;
         break;
@@ -229,12 +241,12 @@ public class Monster {
 
     if (mX > mDisplayWidth - mImageSize) {
       mIsRight = false;
-    } else if (mX < - mImageSize) {
+    } else if (mX < -mImageSize) {
       mIsRight = true;
     }
 
     boolean isRightWarning = false;
-    for (Position position: mPositionList) {
+    for (Position position : mPositionList) {
       if (mX < position.getX() && mX + mVX > position.getX()) {
         isRightWarning = true;
         break;
@@ -254,9 +266,19 @@ public class Monster {
     if (mIsFinish) {
       canvas.drawBitmap(mOmedeto, mX, mY, mPaint);
     } else {
-      canvas.drawBitmap(mMonster, mX, mY, mPaint);
+      if (!mIsUp && mIsRight) {
+        canvas.drawBitmap(mMonster, mX, mY, mPaint);
+      } else if (mIsUp && mIsRight) {
+        canvas.drawBitmap(mMonsterReY, mX, mY, mPaint);
+      } else if (!mIsUp && !mIsRight) {
+        canvas.drawBitmap(mMonsterReX, mX, mY, mPaint);
+      } else {
+        canvas.drawBitmap(mMonsterReXY, mX, mY, mPaint);
+      }
     }
+
   }
+
 
   public boolean onTouchEvent(MotionEvent event) {
     if (event.getAction() == MotionEvent.ACTION_DOWN) {
