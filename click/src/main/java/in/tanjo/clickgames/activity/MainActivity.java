@@ -16,23 +16,6 @@ public class MainActivity extends ActionBarActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
-    setContentView(new SampleView(this, Color.BLACK));
+    setContentView(new SampleView(this, Color.WHITE));
   }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.main_activity, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    int id = item.getItemId();
-    if (id == R.id.action_opengl) {
-      startActivity(new Intent(this, OpenGLActivity.class));
-      return true;
-    }
-    return super.onOptionsItemSelected(item);
-  }
-
 }

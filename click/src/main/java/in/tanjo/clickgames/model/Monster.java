@@ -10,6 +10,9 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import in.tanjo.clickgames.click.R;
 
 public class Monster {
@@ -27,6 +30,7 @@ public class Monster {
   private int mDisplayWidth;
   private int mDisplayHeight;
   private int mImageSize;
+  protected List<Position> mPositionList;
 
   public int getY() {
     return mY;
@@ -164,25 +168,57 @@ public class Monster {
     mOmedeto = omedeto;
   }
 
+  public void setIsRight(boolean isRight) {
+    mIsRight = isRight;
+  }
+
+  public void setIsUp(boolean isUp) {
+    mIsUp = isUp;
+  }
+
+  public void setIsFinish(boolean isFinish) {
+    mIsFinish = isFinish;
+  }
+
+  public List<Position> getPositionList() {
+    return mPositionList;
+  }
+
+  public void setPositionList(List<Position> positionList) {
+    mPositionList = positionList;
+  }
+
   public Monster(Context context) {
     mImageSize = 240;
     WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
     Display display = wm.getDefaultDisplay();
     mDisplayWidth = display.getWidth();
     mDisplayHeight = display.getHeight();
-    mMonster = BitmapFactory.decodeResource(context.getResources(), R.drawable.monster);
+    mMonster = BitmapFactory.decodeResource(context.getResources(), R.drawable.clickura);
     mMonster = Bitmap.createScaledBitmap(mMonster, mImageSize, mImageSize, false);
     mPaint = new Paint();
     mOmedeto = BitmapFactory.decodeResource(context.getResources(), R.drawable.omedeto);
     mOmedeto = Bitmap.createScaledBitmap(mOmedeto, mImageSize, mImageSize, false);
+    mPositionList = new ArrayList<Position>();
   }
 
   public void onDraw(Canvas canvas) {
-    Log.i("CLICK", mY + " " + mVY);
     if (mY > mDisplayHeight - mImageSize) {
       mIsUp = false;
     } else if (mY < - mImageSize) {
       mIsUp = true;
+    }
+
+    boolean isUpWarning = false;
+    for (Position position: mPositionList) {
+      if (mY < position.getY() && mY + mVY > position.getY()) {
+        isUpWarning = true;
+        break;
+      }
+    }
+
+    if (isUpWarning) {
+      mIsUp = !mIsUp;
     }
 
     if (mIsUp) {
@@ -191,11 +227,22 @@ public class Monster {
       mY -= mVY * Math.random();
     }
 
-    Log.i("CLICK", mX + " " + mVX);
     if (mX > mDisplayWidth - mImageSize) {
       mIsRight = false;
     } else if (mX < - mImageSize) {
       mIsRight = true;
+    }
+
+    boolean isRightWarning = false;
+    for (Position position: mPositionList) {
+      if (mX < position.getX() && mX + mVX > position.getX()) {
+        isRightWarning = true;
+        break;
+      }
+    }
+
+    if (isRightWarning) {
+      mIsRight = !mIsRight;
     }
 
     if (mIsRight) {
@@ -213,21 +260,27 @@ public class Monster {
 
   public boolean onTouchEvent(MotionEvent event) {
     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-      if (event != null &&
-          getX() < event.getX() && event.getX() < getX() + getWidth() &&
-          getY() < event.getY() && event.getY() < getY() + getHeight()) {
+
+      mPositionList.add(new Position(event.getX(), event.getY()));
+
+      if (mX < event.getX() && event.getX() < mX + getWidth() &&
+          mY < event.getY() && event.getY() < mY + getHeight()) {
+
         if (mIsFinish) {
           mIsFinish = false;
+          mPositionList.clear();
         }
         if (mVY > mImageSize) {
           mIsFinish = true;
           mVY = 10;
+          mPositionList.clear();
         } else {
           mVY += mVY;
         }
         if (mVX > mImageSize) {
           mIsFinish = true;
           mVX = 10;
+          mPositionList.clear();
         } else {
           mVX += mVX;
         }
